@@ -59,6 +59,98 @@ Before запуск, make sure you have installed:
 - npm
 - PostgreSQL
 
+## Docker (Recommended Quick Start)
+
+This repo includes Docker setup for all services:
+
+- `client` (React build + Nginx)
+- `server` (Express + Prisma)
+- `db` (PostgreSQL)
+
+### How Docker works in this project
+
+- Each app runs in an isolated container.
+- `docker-compose.yml` starts all containers together as one stack.
+- Containers communicate via internal network names (`server`, `db`).
+- Data is persisted in a named volume (`postgres_data`).
+- Frontend is served by Nginx and proxies `/api/*` to backend container.
+
+### Run with Docker Compose
+
+From the project root:
+
+```bash
+docker compose up --build -d
+# fallback: docker-compose up --build -d
+```
+
+Open app:
+
+```text
+http://localhost:8080
+```
+
+Check API health:
+
+```text
+http://localhost:8080/api/v1/health
+```
+
+Stop containers:
+
+```bash
+docker compose down
+# fallback: docker-compose down
+```
+
+Stop and remove DB volume too (full reset):
+
+```bash
+docker compose down -v
+# fallback: docker-compose down -v
+```
+
+### Important for production
+
+In `docker-compose.yml`, replace defaults with strong secrets:
+
+- `JWT_ACCESS_SECRET`
+- `JWT_REFRESH_SECRET`
+- `POSTGRES_PASSWORD`
+
+### Push images to Docker Hub
+
+Example (replace `yourname`):
+
+```bash
+docker login
+docker build -t yourname/trading-journal-server:latest ./server
+docker build -t yourname/trading-journal-client:latest ./client
+docker push yourname/trading-journal-server:latest
+docker push yourname/trading-journal-client:latest
+```
+
+### Docker dev mode (hot reload)
+
+For development with auto-reload inside containers:
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+Dev URLs:
+
+```text
+Frontend: http://localhost:3000
+Backend:  http://localhost:5000
+```
+
+Stop dev stack:
+
+```bash
+docker compose -f docker-compose.dev.yml down
+```
+
 ## Environment Variables
 
 Create a file `server/.env` with values like these:
