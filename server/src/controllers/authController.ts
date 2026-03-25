@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../db/client';
+import { sendInternalError } from '../utils/http';
 
 const ACCESS_TOKEN_TTL_MINUTES = 15;
 const REFRESH_TOKEN_TTL_DAYS = 30;
@@ -64,15 +65,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Внутренняя ошибка сервера',
-      },
-    });
+    return sendInternalError(res, 'Внутренняя ошибка сервера', error);
   }
 };
 
@@ -130,15 +123,7 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Внутренняя ошибка сервера',
-      },
-    });
+    return sendInternalError(res, 'Внутренняя ошибка сервера', error);
   }
 };
 

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../db/client';
+import { sendInternalError } from '../utils/http';
 
 export const getAccounts = async (_req: Request, res: Response) => {
   try {
@@ -33,48 +34,7 @@ export const getAccounts = async (_req: Request, res: Response) => {
       data: withMetrics,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить счета',
-      },
-    });
-  }
-};
-
-export const getAccountById = async (req: Request, res: Response) => {
-  try {
-    const account = await prisma.account.findUnique({
-      where: { id: req.params.id },
-    });
-
-    if (!account) {
-      return res.status(404).json({
-        success: false,
-        error: {
-          code: 'NOT_FOUND',
-          message: 'Счет не найден',
-        },
-      });
-    }
-
-    return res.json({
-      success: true,
-      data: account,
-    });
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить счет',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить счета', error);
   }
 };
 
@@ -109,15 +69,7 @@ export const createAccount = async (req: Request, res: Response) => {
       data: account,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось создать счет',
-      },
-    });
+    return sendInternalError(res, 'Не удалось создать счет', error);
   }
 };
 
@@ -143,15 +95,7 @@ export const updateAccount = async (req: Request, res: Response) => {
       data: account,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось обновить счет',
-      },
-    });
+    return sendInternalError(res, 'Не удалось обновить счет', error);
   }
 };
 
@@ -182,15 +126,7 @@ export const deleteAccount = async (req: Request, res: Response) => {
 
     return res.status(204).send();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось удалить счет',
-      },
-    });
+    return sendInternalError(res, 'Не удалось удалить счет', error);
   }
 };
 

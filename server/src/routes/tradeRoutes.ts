@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   createTrade,
   deleteTrade,
@@ -9,6 +10,8 @@ import {
 } from '../controllers/tradeController';
 
 export const router = Router();
+
+router.use(authMiddleware);
 
 router.get('/', getTrades);
 router.post('/', createTrade);

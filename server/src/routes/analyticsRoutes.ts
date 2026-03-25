@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { authMiddleware } from '../middlewares/authMiddleware';
 import {
   getBySymbol,
   getAnalyticsSummary,
@@ -9,6 +10,8 @@ import {
 } from '../controllers/analyticsController';
 
 export const router = Router();
+
+router.use(authMiddleware);
 
 router.get('/summary', getAnalyticsSummary);
 router.get('/equity-curve', getEquityCurve);

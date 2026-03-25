@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../db/client';
+import { sendInternalError } from '../utils/http';
 
 const parsePagination = (req: Request) => {
   const page = Number(req.query.page) || 1;
@@ -121,15 +122,7 @@ export const getTrades = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить список сделок',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить список сделок', error);
   }
 };
 
@@ -158,15 +151,7 @@ export const getTradeById = async (req: Request, res: Response) => {
       data: trade,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить сделку',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить сделку', error);
   }
 };
 
@@ -269,15 +254,7 @@ export const createTrade = async (req: Request, res: Response) => {
       data: trade,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось создать сделку',
-      },
-    });
+    return sendInternalError(res, 'Не удалось создать сделку', error);
   }
 };
 
@@ -409,15 +386,7 @@ export const updateTrade = async (req: Request, res: Response) => {
       data: trade,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось обновить сделку',
-      },
-    });
+    return sendInternalError(res, 'Не удалось обновить сделку', error);
   }
 };
 
@@ -443,15 +412,7 @@ export const deleteTrade = async (req: Request, res: Response) => {
 
     return res.status(204).send();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось удалить сделку',
-      },
-    });
+    return sendInternalError(res, 'Не удалось удалить сделку', error);
   }
 };
 
@@ -500,15 +461,7 @@ export const getOpenTrades = async (req: Request, res: Response) => {
       data: enrichedTrades,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить открытые сделки',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить открытые сделки', error);
   }
 };
 

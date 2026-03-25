@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -31,6 +31,25 @@ export function ToastProvider({ children }: Props) {
   }, []);
 
   const value = useMemo(() => ({ showToast }), [showToast]);
+
+  useEffect(() => {
+    const handleToastEvent = (event: Event) => {
+      const customEvent = event as CustomEvent<{ message?: string; type?: ToastType }>;
+      const message = customEvent.detail?.message;
+
+      if (!message) {
+        return;
+      }
+
+      showToast(message, customEvent.detail?.type ?? 'info');
+    };
+
+    window.addEventListener('app:toast', handleToastEvent);
+
+    return () => {
+      window.removeEventListener('app:toast', handleToastEvent);
+    };
+  }, [showToast]);
 
   return (
     <ToastContext.Provider value={value}>

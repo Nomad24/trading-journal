@@ -9,6 +9,21 @@ export const api = axios.create({
   baseURL: '/api/v1',
 });
 
+const showGlobalToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+  window.dispatchEvent(new CustomEvent('app:toast', { detail: { message, type } }));
+};
+
+const clearSessionWithNotification = (message: string) => {
+  const authState = useAuthStore.getState();
+  const hadSession = Boolean(authState.accessToken || authState.refreshToken);
+
+  authState.clearSession();
+
+  if (hadSession) {
+    showGlobalToast(message, 'error');
+  }
+};
+
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken;
   if (token) {
@@ -27,8 +42,14 @@ api.interceptors.response.use(
     }
 
     const authState = useAuthStore.getState();
+    const serverCode = (error.response?.data as { error?: { code?: string } } | undefined)?.error?.code;
+    const sessionExpiredMessage =
+      serverCode === 'TOKEN_EXPIRED'
+        ? 'Сессия истекла. Войдите снова'
+        : 'Сессия недействительна. Войдите снова';
+
     if (!authState.refreshToken) {
-      authState.clearSession();
+      clearSessionWithNotification(sessionExpiredMessage);
       return Promise.reject(error);
     }
 
@@ -42,7 +63,7 @@ api.interceptors.response.use(
       const newAccessToken: string | undefined = refreshResponse.data?.data?.accessToken;
 
       if (!newAccessToken) {
-        authState.clearSession();
+        clearSessionWithNotification('Сессия истекла. Войдите снова');
         return Promise.reject(error);
       }
 
@@ -50,7 +71,7 @@ api.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       return api(originalRequest);
     } catch (refreshError) {
-      authState.clearSession();
+      clearSessionWithNotification('Сессия истекла. Войдите снова');
       return Promise.reject(refreshError);
     }
   }

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { prisma } from '../db/client';
+import { sendInternalError } from '../utils/http';
 
 const applyDateRange = <T extends { entryDate: Date; exitDate: Date | null }>(
   trades: T[],
@@ -108,15 +109,7 @@ export const getAnalyticsSummary = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить сводную аналитику',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить сводную аналитику', error);
   }
 };
 
@@ -138,15 +131,7 @@ export const getEquityCurve = async (req: Request, res: Response) => {
       data: points,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить кривую капитала',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить кривую капитала', error);
   }
 };
 
@@ -171,15 +156,7 @@ export const getPnlChart = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить P&L по дням',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить P&L по дням', error);
   }
 };
 
@@ -211,15 +188,7 @@ export const getWinLoss = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить распределение Win/Loss',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить распределение Win/Loss', error);
   }
 };
 
@@ -262,15 +231,7 @@ export const getBySymbol = async (req: Request, res: Response) => {
       data,
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить доходность по тикерам',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить доходность по тикерам', error);
   }
 };
 
@@ -303,15 +264,7 @@ export const getHeatmap = async (req: Request, res: Response) => {
       ),
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'INTERNAL_ERROR',
-        message: 'Не удалось получить heatmap данные',
-      },
-    });
+    return sendInternalError(res, 'Не удалось получить heatmap данные', error);
   }
 };
 

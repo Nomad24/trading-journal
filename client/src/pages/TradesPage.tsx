@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '../components/Skeleton';
 import { useToast } from '../components/ToastProvider';
 import { api } from '../services/api';
+import { AccountOption, fetchAccountOptions } from '../services/accounts';
 import { useActiveAccountStore } from '../store/activeAccountStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -23,11 +24,6 @@ type Trade = {
   notes?: string | null;
   tags?: Array<{ id: string; tagName: string }>;
   pnl?: string;
-};
-
-type AccountOption = {
-  id: string;
-  name: string;
 };
 
 export function TradesPage() {
@@ -159,11 +155,7 @@ export function TradesPage() {
 
   const loadAccounts = async () => {
     try {
-      const res = await api.get('/accounts');
-      const items: AccountOption[] = (res.data.data ?? []).map((item: any) => ({
-        id: item.id,
-        name: item.name,
-      }));
+      const items = await fetchAccountOptions();
       setAccounts(items);
       if (activeAccountId !== 'all') {
         setAccountId(activeAccountId);

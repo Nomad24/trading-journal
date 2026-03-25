@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { AccountOption, fetchAccountOptions } from '../services/accounts';
 import { useActiveAccountStore } from '../store/activeAccountStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -23,16 +24,12 @@ export function Layout({ children }: Props) {
   const activeAccountId = useActiveAccountStore((state) => state.activeAccountId);
   const setActiveAccountId = useActiveAccountStore((state) => state.setActiveAccountId);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [accounts, setAccounts] = useState<Array<{ id: string; name: string }>>([]);
+  const [accounts, setAccounts] = useState<AccountOption[]>([]);
 
   useEffect(() => {
     const loadAccounts = async () => {
       try {
-        const response = await api.get('/accounts');
-        const nextAccounts = (response.data?.data ?? []).map((item: any) => ({
-          id: item.id,
-          name: item.name,
-        }));
+        const nextAccounts = await fetchAccountOptions();
         setAccounts(nextAccounts);
 
         if (activeAccountId !== 'all' && !nextAccounts.some((item: { id: string }) => item.id === activeAccountId)) {
